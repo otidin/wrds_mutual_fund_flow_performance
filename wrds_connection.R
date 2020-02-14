@@ -27,6 +27,16 @@ names <-                 c("FUND_HDR", # 15 sec
                            "MONTHLY_TNA", #
                            "MONTHLY_TNA_RET_NAV") #
 
+
+names <-                 c("FUND_HDR", # 15 sec
+                           "FUND_STYLE", # 17 sec
+                           "FUND_FEES", # 50 sec
+                           "FUND_NAMES", #
+                           "MONTHLY_RETURNS", #
+                           "MONTHLY_NAV", #
+                           "MONTHLY_TNA", #
+                           "MONTHLY_TNA_RET_NAV") #
+
 i=1
 sql<-paste("select * from CRSP.",names[i], sep="")
 tic()
@@ -36,3 +46,15 @@ data<- dbFetch(res, n=40)
 toc()
 dbClearResult(res)
 View(data)
+
+
+for(i in 1:8) {
+  sql<-paste("select * from CRSP.",names[i], sep="")
+  tic()
+  res <- dbSendQuery(wrds, sql)
+  data[i]<- dbFetch(res, n=100)
+  toc()
+  dbClearResult(res)
+  View(data)
+}
+
