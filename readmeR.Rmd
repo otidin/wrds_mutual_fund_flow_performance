@@ -1,0 +1,16 @@
+--- 
+title: "WRDS"
+# output: html_document
+# output: pdf_document
+output: md_document
+# output: ioslides_presentation
+# output: ioslides_presentation
+# output: word_document
+# output: beamer_presentation
+# output: slidy_presentation
+# runtime: shiny
+---
+
+readme markdown from Rstudio
+
+
