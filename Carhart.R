@@ -1,3 +1,7 @@
+
+# libraries ---------------------------------------------------------------
+
+
 # install.packages("quantmod")
 library(devtools)
 # install_github("braverock/FactorAnalytics")
@@ -5,25 +9,77 @@ library(devtools)
 # install.packages("robust")
 # install.packages("PerformanceAnalytics")
 # install.packages("lars")
+# install.packages("ramify")
+library(ramify)
 library(PerformanceAnalytics)
 library(robust)
 library(lars)
 library(quantmod)
-library(factorAnalytics)
+# library(factorAnalytics)
 options(digits=3)
-library(factorAnalytics)
+# library(factorAnalytics)
+
 
 ########################Carhart 4-Factor Model######################################
 # Carhart 4-Factor Model
-########################### Compute Excess Returns#########################################
+########################### Compute Excess Returns###############################<Up>#########
+
+# compute excess returns --------------------------------------------------
+
 # Compute Excess Returns
 returns.z <- read.zoo("timeSeriesReturns.csv",FUN=as.yearmon,header=T,sep=",")
 returns.z <- returns.z[which(index(returns.z)>="Jan 2000"),]
 ret.z <- returns.z[,1:30]-returns.z[,34] #return -rf
 fact.z <- returns.z[,c(31,32,33,35)]
 
+returns2.z <- read.zoo("timeSeriesReturns.csv",FUN=as.yearmon,header=T,sep=",")
+returns2.z <- returns2.z[which(index(returns2.z)>="Jan 2000"),]
+ret2.z <- returns2.z[,1:30]-returns2.z[,34] #return -rf
+fact2.z <- returns2.z[,c(31,32,33,35)]
+
+# returns3.z <- read.zoo("foo.csv",FUN=as.yearmon,header=T,sep=",")
+# returns3.z <- returns3.z[which(index(returns3.z)>="Jan 2000"),]
+# ret3.z <- returns3.z #return -rf
+# fact3.z <- returns3.z[,c(67,68,69,70)]
+
+
+# merge returns and indexes -----------------------------------------------
+
+
+source('~/Desktop/gillesproject/merge.R')
+returns.z<-ff
+returns.z<-returns.z[which(returns.z$date>20000000 & returns.z$date<max(align_matrix$caldt)),]
+# returns.z<-merge(returns.z,align_matrix)
+# align_matrix = as.matrix(as.data.frame(lapply(align_matrix, as.numeric)))
+align_matrix<-(as.matrix(as.data.frame(lapply(align_matrix, as.matrix))))
+align_matrix[which((align_matrix==""))]<-NA
+align_matrix[which((align_matrix=="R"))]<-NA
+align_matrix<-as.numeric(as.character(align_matrix))
+align_matrix<-(resize(align_matrix, length(align_matrix)/counter,counter))
+returns.z<-cbind(returns.z,align_matrix)
+
+ret.z<-returns.z[,11:dim(returns.z)[2]]-returns.z$rf
+# rettemp<-ret.z
+ret.z<-as.numeric(unlist(ret.z))
+ret.z<-(resize(ret.z, length(ret.z)/(counter-1),counter-1))
+# ret.z<-(resize(rettemp, length(rettemp)/(counter-1),counter-1))
+ret.z<-as.data.frame(ret.z)
+
+fact.z <- returns.z[,c(2,3,4,8)]
+fact.z<-as.numeric(unlist(fact.z))
+fact.z<-(resize(fact.z, length(fact.z)/4,4))
+fact.z<-as.data.frame(fact.z)
+fact.z<-as.numeric(unlist(fact.z))
+fact.z<-(resize(fact.z, length(fact.z)/4,4))
+
+
+# the rest ----------------------------------------------------------------
+
+
+alternative<-rbind(ret.z,fact.z)
+alternative<-as.data.frame(alternative)
 # Fit Carhart 4-Factor Model by Linear Regression
-carhart <- lm(ret.z~fact.z)
+
 carhart$coefficients
 carhart$residuals
 carhart$effects
